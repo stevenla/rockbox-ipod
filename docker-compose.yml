@@ -1,0 +1,16 @@
+services:
+  rockbox:
+    build:
+      context: .
+      args:
+        TOOLCHAINS: "a"   # e.g. "a m i" for arm + m68k + mips
+    image: rockbox-build
+    volumes:
+      - .:/src
+      - ccache:/ccache
+    working_dir: /src
+    stdin_open: true
+    tty: true
+
+volumes:
+  ccache:

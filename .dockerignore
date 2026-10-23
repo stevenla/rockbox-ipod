@@ -1,0 +1,6 @@
+# Only the toolchain build script/patches and the helper are needed in the
+# build context; the source tree is bind-mounted at runtime.
+*
+!tools/rockboxdev.sh
+!tools/toolchain-patches
+!docker/rbbuild.sh
