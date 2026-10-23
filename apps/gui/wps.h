@@ -50,6 +50,8 @@ void wps_do_action(enum wps_do_action_type, bool updatewps);
 
 struct wps_state *get_wps_state(void);
 
+bool wps_handle_playback_action(int action);
+
 /* in milliseconds */
 #define DEFAULT_SKIP_THRESH          3000l
 

@@ -216,7 +216,7 @@ static int skintouch_to_wps(void)
 }
 #endif /* HAVE_TOUCHSCREEN */
 
-static bool ffwd_rew(int button, bool seek_from_end)
+static bool ffwd_rew(int button, bool seek_from_end, bool update_skin)
 {
     unsigned int step = 0;     /* current ff/rewind step */
     unsigned int max_step = 0; /* maximum ff/rewind step */
@@ -310,11 +310,14 @@ static bool ffwd_rew(int button, bool seek_from_end)
                    displays corectly */
                 gstate->ff_rewind_count = ff_rewind_count;
 
-                FOR_NB_SCREENS(i)
+                if (update_skin)
                 {
-                    skin_update(WPS, i,
-                                SKIN_REFRESH_PLAYER_PROGRESS |
-                                SKIN_REFRESH_DYNAMIC);
+                    FOR_NB_SCREENS(i)
+                    {
+                        skin_update(WPS, i,
+                                    SKIN_REFRESH_PLAYER_PROGRESS |
+                                    SKIN_REFRESH_DYNAMIC);
+                    }
                 }
 
                 break;
@@ -902,7 +905,7 @@ long gui_wps_show(void)
                     }
                 }
                 else
-                    ffwd_rew(ACTION_WPS_SEEKFWD, false);
+                    ffwd_rew(ACTION_WPS_SEEKFWD, false, true);
                 last_right = last_left = 0;
                 break;
             /* fast rewind
@@ -925,12 +928,12 @@ long gui_wps_show(void)
                     if (!audio_paused)
                         audio_pause();
                     audio_prev();
-                    ffwd_rew(ACTION_WPS_SEEKBACK, true);
+                    ffwd_rew(ACTION_WPS_SEEKBACK, true, true);
                     if (!audio_paused)
                         audio_resume();
                 }
                 else
-                    ffwd_rew(ACTION_WPS_SEEKBACK, false);
+                    ffwd_rew(ACTION_WPS_SEEKBACK, false, true);
                 last_left = last_right = 0;
                 break;
 
@@ -992,6 +995,12 @@ long gui_wps_show(void)
             case ACTION_WPS_MENU:
                 gwps_leave_wps(true);
                 return GO_TO_ROOT;
+                break;
+
+            /* back to the screen the WPS was entered from */
+            case ACTION_STD_CANCEL:
+                gwps_leave_wps(true);
+                return GO_TO_PREVIOUS;
                 break;
 
 
@@ -1083,7 +1092,7 @@ long gui_wps_show(void)
                 break;
             case ACTION_NONE: /* Timeout, do a partial update */
                 update = true;
-                ffwd_rew(button, false); /* hopefully fix the ffw/rwd bug */
+                ffwd_rew(button, false, true); /* hopefully fix the ffw/rwd bug */
                 break;
 #ifdef HAVE_RECORDING
             case ACTION_WPS_REC:
@@ -1108,6 +1117,53 @@ long gui_wps_show(void)
         }
     }
     return GO_TO_ROOT; /* unreachable - just to reduce compiler warnings */
+}
+
+/* Keymaps may return the WPS skip/seek actions in other contexts so that
+ * playback can be controlled from any screen; get_action() passes them here.
+ * Returns true if the action was one of those (it is then consumed). */
+bool wps_handle_playback_action(int action)
+{
+    struct wps_state *state = get_wps_state();
+
+    switch (action)
+    {
+        case ACTION_WPS_SKIPPREV:
+        case ACTION_WPS_SKIPNEXT:
+        case ACTION_WPS_SEEKBACK:
+        case ACTION_WPS_SEEKFWD:
+        case ACTION_WPS_STOPSEEK:
+            break;
+        default:
+            return false;
+    }
+
+    if (global_settings.party_mode || !(audio_status() & AUDIO_STATUS_PLAY))
+        return true;
+
+    /* the track event callbacks are only registered once the WPS has
+       been shown, so don't rely on them */
+    state->id3 = audio_current_track();
+    if (!state->id3)
+        return true;
+
+    /* always skip whole tracks here, whatever the skip length setting */
+    switch (action)
+    {
+        case ACTION_WPS_SKIPPREV:
+            if (!global_settings.prevent_skip)
+                prev_track(DEFAULT_SKIP_THRESH);
+            break;
+        case ACTION_WPS_SKIPNEXT:
+            if (!global_settings.prevent_skip)
+                next_track();
+            break;
+        case ACTION_WPS_SEEKBACK:
+        case ACTION_WPS_SEEKFWD:
+            ffwd_rew(action, false, false);
+            break;
+    }
+    return true;
 }
 
 struct wps_state *get_wps_state(void)

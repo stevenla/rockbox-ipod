@@ -28,6 +28,7 @@
 #if !defined(BOOTLOADER)
 #include "language.h"
 #include "skin_engine/skin_engine.h"
+#include "wps.h"
 #endif
 
 #include "appevents.h"
@@ -1279,6 +1280,16 @@ int get_action(int context, int timeout)
 #endif
 
     action = do_backlight(&action_last, &current, action);
+
+#if !defined(BOOTLOADER)
+    /* keymaps can map the WPS skip/seek actions outside of the WPS
+       to control playback from any screen */
+    if ((context & ~ALLOW_SOFTLOCK) != CONTEXT_WPS
+        && wps_handle_playback_action(action))
+    {
+        action = ACTION_NONE;
+    }
+#endif
 
     return action;
 }
