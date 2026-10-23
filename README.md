@@ -49,6 +49,7 @@ iPod firmware:
 | --- | --- | --- |
 | Left (⏮) | Previous track, or restart the track if more than 3 s in | Rewind |
 | Right (⏭) | Next track | Fast forward |
+| Play/Pause | Main menu: play/pause. Lists and file browser: open Now Playing. Now Playing: play/pause | Stop playback |
 | Menu | Back one level (from Now Playing: back to the screen it was opened from) | Go to the main menu |
 
 - Left and right control playback on any screen: lists, menus, the file and
@@ -68,6 +69,11 @@ iPod firmware:
   the same behaviour.
 - Skip and seek are ignored in party mode or when nothing is playing.
   "Prevent Track Skipping" blocks the skips.
+- In the main menu, Play/Pause toggles playback instead of opening Now
+  Playing (it does nothing when no track is loaded). It still opens Now
+  Playing from the file browser and other lists. Implemented with a separate
+  `button_context_mainmenu` keymap that returns `ACTION_WPS_PLAY`, handled in
+  `wps_handle_playback_action()` via `wps_do_action(WPS_PLAYPAUSE)`.
 - Removed: holding Menu no longer opens the quick screen, and the "hold
   left/right to scroll lists" setting has no effect on iPods.
 - Holding Menu while already on the main menu goes back to the previous

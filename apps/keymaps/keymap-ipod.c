@@ -72,6 +72,16 @@ static const struct button_mapping button_context_tree[]  = {
     LAST_ITEM_IN_LIST__NEXTLIST(CONTEXT_STD)
 }; /* button_context_tree */
 
+/* Play/pause toggles playback in the main menu instead of opening the WPS
+ * (ACTION_WPS_PLAY is handled by get_action() outside of CONTEXT_WPS). */
+static const struct button_mapping button_context_mainmenu[]  = {
+    { ACTION_WPS_PLAY,          BUTTON_PLAY|BUTTON_REL,      BUTTON_PLAY },
+    { ACTION_TREE_STOP,         BUTTON_PLAY|BUTTON_REPEAT,   BUTTON_PLAY },
+    { ACTION_TREE_HOTKEY,       BUTTON_SELECT|BUTTON_PLAY,   BUTTON_NONE },
+
+    LAST_ITEM_IN_LIST__NEXTLIST(CONTEXT_STD)
+}; /* button_context_mainmenu */
+
 static const struct button_mapping button_context_wps[]  = {
     { ACTION_WPS_PLAY,      BUTTON_PLAY|BUTTON_REL,         BUTTON_PLAY },
     { ACTION_WPS_STOP,      BUTTON_PLAY|BUTTON_REPEAT,      BUTTON_PLAY },
@@ -449,8 +459,10 @@ const struct button_mapping* get_context_mapping(int context)
         case CONTEXT_WPS:
             return button_context_wps;
 
-        case CONTEXT_TREE:
         case CONTEXT_MAINMENU:
+            return button_context_mainmenu;
+
+        case CONTEXT_TREE:
         case CONTEXT_CUSTOM|CONTEXT_TREE:
             return button_context_tree;
 

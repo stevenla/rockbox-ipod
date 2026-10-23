@@ -1133,6 +1133,7 @@ bool wps_handle_playback_action(int action)
         case ACTION_WPS_SEEKBACK:
         case ACTION_WPS_SEEKFWD:
         case ACTION_WPS_STOPSEEK:
+        case ACTION_WPS_PLAY:
             break;
         default:
             return false;
@@ -1140,6 +1141,14 @@ bool wps_handle_playback_action(int action)
 
     if (global_settings.party_mode || !(audio_status() & AUDIO_STATUS_PLAY))
         return true;
+
+    if (action == ACTION_WPS_PLAY)
+    {
+        /* the WPS may not have tracked pause state changed elsewhere */
+        state->paused = (audio_status() & AUDIO_STATUS_PAUSE) != 0;
+        wps_do_action(WPS_PLAYPAUSE, false);
+        return true;
+    }
 
     /* the track event callbacks are only registered once the WPS has
        been shown, so don't rely on them */
