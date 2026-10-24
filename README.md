@@ -47,9 +47,9 @@ iPod firmware:
 
 | Button | Press | Hold |
 | --- | --- | --- |
-| Left (⏮) | Previous track, or restart the track if more than 3 s in | Rewind |
-| Right (⏭) | Next track | Fast forward |
-| Play/Pause | Main menu: play/pause. Lists and file browser: open Now Playing. Now Playing: play/pause | Stop playback |
+| Left (⏮) | Previous track, or restart the track if more than 3 s in | Rewind (Now Playing only) |
+| Right (⏭) | Next track | Fast forward (Now Playing only) |
+| Play/Pause | Main menu, file browser and database browser: play/pause. Now Playing: play/pause | Stop playback |
 | Menu | Back one level (from Now Playing: back to the screen it was opened from) | Go to the main menu |
 
 - Left and right control playback on any screen: lists, menus, the file and
@@ -59,21 +59,21 @@ iPod firmware:
 - Some screens still use left/right for their own purposes: the on-screen
   keyboard, the quick screen, the pitch screen, the FM radio, the recording
   screen, and the EQ, colour-picker and time/date setting screens.
-- Seeking outside Now Playing has no progress bar. Only the fast-forward or
-  rewind icon in the status bar shows it is happening. The jump is applied
-  when you let go.
+- Holding left/right to seek only works in Now Playing. Elsewhere, holding
+  does nothing (releasing after a hold does not skip).
 - Outside Now Playing, left/right always skip whole tracks: left restarts the
   current track if it has played for 3 seconds or more, and otherwise goes to
   the previous track. The "Skip Length" setting is ignored there. In Now
   Playing, left/right follow "Skip Length", whose default ("Skip Track") gives
   the same behaviour.
-- Skip and seek are ignored in party mode or when nothing is playing.
+- Skip is ignored in party mode or when nothing is playing.
   "Prevent Track Skipping" blocks the skips.
-- In the main menu, Play/Pause toggles playback instead of opening Now
-  Playing (it does nothing when no track is loaded). It still opens Now
-  Playing from the file browser and other lists. Implemented with a separate
-  `button_context_mainmenu` keymap that returns `ACTION_WPS_PLAY`, handled in
-  `wps_handle_playback_action()` via `wps_do_action(WPS_PLAYPAUSE)`.
+- In the main menu and the file and database browsers, Play/Pause toggles
+  playback instead of opening Now Playing (it does nothing when no track is
+  loaded). Implemented with a separate `button_context_mainmenu` keymap,
+  used for `CONTEXT_MAINMENU` and `CONTEXT_TREE`, that returns
+  `ACTION_WPS_PLAY`, handled in `wps_handle_playback_action()` via
+  `wps_do_action(WPS_PLAYPAUSE)`.
 - Selecting the track that is already playing (or paused) opens Now Playing
   instead of restarting it, but only when it is selected from the same list
   it was started from: the same folder in the file browser, or the same
@@ -95,10 +95,10 @@ iPod firmware:
 - Holding Menu while already on the main menu goes back to the previous
   screen (the existing Rockbox main-menu behaviour).
 
-Implementation: `get_action()` (`apps/action.c`) passes skip/seek actions
-returned outside the WPS context to the new `wps_handle_playback_action()`
-(`apps/gui/wps.c`). That function reuses the WPS's own skip and seek code,
-without redrawing the WPS. The WPS also now handles `ACTION_STD_CANCEL` by
+Implementation: `get_action()` (`apps/action.c`) passes skip and
+play/pause actions returned outside the WPS context to the new
+`wps_handle_playback_action()` (`apps/gui/wps.c`). That function reuses the
+WPS's own skip code, without redrawing the WPS. The WPS also now handles `ACTION_STD_CANCEL` by
 returning to the previous screen. Other targets are unaffected, because no
 other keymap returns these actions outside the WPS.
 

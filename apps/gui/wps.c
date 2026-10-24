@@ -1130,9 +1130,6 @@ bool wps_handle_playback_action(int action)
     {
         case ACTION_WPS_SKIPPREV:
         case ACTION_WPS_SKIPNEXT:
-        case ACTION_WPS_SEEKBACK:
-        case ACTION_WPS_SEEKFWD:
-        case ACTION_WPS_STOPSEEK:
         case ACTION_WPS_PLAY:
             break;
         default:
@@ -1166,10 +1163,6 @@ bool wps_handle_playback_action(int action)
         case ACTION_WPS_SKIPNEXT:
             if (!global_settings.prevent_skip)
                 next_track();
-            break;
-        case ACTION_WPS_SEEKBACK:
-        case ACTION_WPS_SEEKFWD:
-            ffwd_rew(action, false, false);
             break;
     }
     return true;

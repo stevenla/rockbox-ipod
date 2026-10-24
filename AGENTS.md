@@ -53,8 +53,7 @@ Use the Docker setup rather than installing a toolchain on the host (macOS):
   prerequisite button must match the previous button exactly, so
   `BUTTON_MENU|BUTTON_REPEAT` with prerequisite `BUTTON_MENU` fires only once
   per hold.
-- Skip and seek actions (`ACTION_WPS_SKIP*`, `ACTION_WPS_SEEK*`,
-  `ACTION_WPS_STOPSEEK`) returned by a keymap in any context other than
+- Skip and play actions (`ACTION_WPS_SKIP*`, `ACTION_WPS_PLAY`) returned by a keymap in any context other than
   `CONTEXT_WPS` are handled inside `get_action()` by
   `wps_handle_playback_action()`, and become `ACTION_NONE` for the caller.
 

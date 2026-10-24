@@ -41,8 +41,9 @@ CONTEXT_CUSTOM|CONTEXT_TREE = the standard list/tree defines (without directions
 /* Like the original iPod firmware, left/right control playback on every
  * screen that doesn't need them for something else, and menu always goes
  * back one level (hold menu goes to the main menu). The ACTION_WPS_SKIP*
- * and ACTION_WPS_SEEK* actions returned outside of CONTEXT_WPS are handled
- * by get_action() via wps_handle_playback_action(). */
+ * actions returned outside of CONTEXT_WPS are handled by get_action() via
+ * wps_handle_playback_action(). Seeking (hold left/right) is only available
+ * in the WPS. */
 
 static const struct button_mapping button_context_standard[]  = {
     { ACTION_STD_PREV,          BUTTON_SCROLL_BACK,                 BUTTON_NONE },
@@ -55,11 +56,7 @@ static const struct button_mapping button_context_standard[]  = {
     { ACTION_STD_CONTEXT,       BUTTON_SELECT|BUTTON_REPEAT,        BUTTON_SELECT },
     { ACTION_STD_CANCEL,        BUTTON_PLAY|BUTTON_REPEAT,          BUTTON_NONE },
     { ACTION_WPS_SKIPPREV,      BUTTON_LEFT|BUTTON_REL,             BUTTON_LEFT },
-    { ACTION_WPS_SEEKBACK,      BUTTON_LEFT|BUTTON_REPEAT,          BUTTON_NONE },
-    { ACTION_WPS_STOPSEEK,      BUTTON_LEFT|BUTTON_REL,             BUTTON_LEFT|BUTTON_REPEAT },
     { ACTION_WPS_SKIPNEXT,      BUTTON_RIGHT|BUTTON_REL,            BUTTON_RIGHT },
-    { ACTION_WPS_SEEKFWD,       BUTTON_RIGHT|BUTTON_REPEAT,         BUTTON_NONE },
-    { ACTION_WPS_STOPSEEK,      BUTTON_RIGHT|BUTTON_REL,            BUTTON_RIGHT|BUTTON_REPEAT },
 
     LAST_ITEM_IN_LIST
 }; /* button_context_standard */
@@ -72,7 +69,8 @@ static const struct button_mapping button_context_tree[]  = {
     LAST_ITEM_IN_LIST__NEXTLIST(CONTEXT_STD)
 }; /* button_context_tree */
 
-/* Play/pause toggles playback in the main menu instead of opening the WPS
+/* Play/pause toggles playback in the main menu and in the file and database
+ * browsers instead of opening the WPS
  * (ACTION_WPS_PLAY is handled by get_action() outside of CONTEXT_WPS). */
 static const struct button_mapping button_context_mainmenu[]  = {
     { ACTION_WPS_PLAY,          BUTTON_PLAY|BUTTON_REL,      BUTTON_PLAY },
@@ -460,9 +458,9 @@ const struct button_mapping* get_context_mapping(int context)
             return button_context_wps;
 
         case CONTEXT_MAINMENU:
+        case CONTEXT_TREE:
             return button_context_mainmenu;
 
-        case CONTEXT_TREE:
         case CONTEXT_CUSTOM|CONTEXT_TREE:
             return button_context_tree;
 
