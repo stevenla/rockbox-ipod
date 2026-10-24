@@ -117,6 +117,14 @@ WPS's own skip code, without redrawing the WPS. The WPS also now handles `ACTION
 returning to the previous screen. Other targets are unaffected, because no
 other keymap returns these actions outside the WPS.
 
+### Database browser
+
+- Track lists in the database browser show only the title (no disc number,
+  track number or length). They are still sorted by disc and track number.
+  In `apps/tagnavi.config`, `fmt_title` now starts with a hidden sort prefix
+  (`%02d%03d` disc and track number) that `%strip = "5"` removes before display.
+  Users with their own `tagnavi_user.config` keep their old formats.
+
 ### Build environment
 
 - **Docker build setup** (`Dockerfile`, `docker-compose.yml`, `.dockerignore`,
