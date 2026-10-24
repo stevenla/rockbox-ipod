@@ -159,6 +159,7 @@ enum {
     ACTION_STD_KEYLOCK,
     ACTION_STD_REC,
     ACTION_STD_HOTKEY,
+    ACTION_STD_POWEROFF, /* handled by get_action(), never returned */
 
     /* code context actions */
 

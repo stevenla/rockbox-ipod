@@ -49,7 +49,7 @@ iPod firmware:
 | --- | --- | --- |
 | Left (⏮) | Previous track, or restart the track if more than 3 s in | Rewind (Now Playing only) |
 | Right (⏭) | Next track | Fast forward (Now Playing only) |
-| Play/Pause | Main menu, file browser and database browser: play/pause. Now Playing: play/pause | Stop playback |
+| Play/Pause | Main menu, file browser and database browser: play/pause. Now Playing: play/pause | Power off |
 | Menu | Back one level (from Now Playing: back to the screen it was opened from) | Go to the main menu |
 
 - Left and right control playback on any screen: lists, menus, the file and
@@ -79,6 +79,12 @@ iPod firmware:
   (the "Hotkey" setting for the WPS; nothing happens if it is off). The
   Select+Play hotkey chord was removed from Now Playing. Changed in
   `button_context_wps` in `apps/keymaps/keymap-ipod.c`. Menu still goes back.
+- Holding Play/Pause powers the iPod off from any screen using the standard
+  list keys, the main menu, the browsers and Now Playing (it used to stop
+  playback). While the charger is connected it shows the "charging" splash
+  instead, because the iPod 4G does not define `HAVE_POWEROFF_WHILE_CHARGING`.
+  Implemented as a new `ACTION_STD_POWEROFF` (`apps/action.h`) that
+  `get_action()` handles itself by calling `sys_poweroff()`.
 - Selecting the track that is already playing (or paused) opens Now Playing
   instead of restarting it, but only when it is selected from the same list
   it was started from: the same folder in the file browser, or the same

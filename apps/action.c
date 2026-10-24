@@ -29,6 +29,8 @@
 #include "language.h"
 #include "skin_engine/skin_engine.h"
 #include "wps.h"
+#include "screens.h"
+#include "powermgmt.h"
 #endif
 
 #include "appevents.h"
@@ -1282,7 +1284,19 @@ int get_action(int context, int timeout)
     action = do_backlight(&action_last, &current, action);
 
 #if !defined(BOOTLOADER)
-    /* keymaps can map the WPS skip/seek actions outside of the WPS
+    /* keymaps can map a long press to power off (like the original iPod) */
+    if (action == ACTION_STD_POWEROFF)
+    {
+#if CONFIG_CHARGING && !defined(HAVE_POWEROFF_WHILE_CHARGING)
+        if (charger_inserted())
+            charging_splash();
+        else
+#endif
+            sys_poweroff();
+        action = ACTION_NONE;
+    }
+
+    /* keymaps can map the WPS skip/play actions outside of the WPS
        to control playback from any screen */
     if ((context & ~ALLOW_SOFTLOCK) != CONTEXT_WPS
         && wps_handle_playback_action(action))
