@@ -85,6 +85,11 @@ iPod firmware:
   does the check. Limitations: the key for database listings is built from the
   menu entry and the selections leading to it, so it is lost if the database
   is reloaded; playlist files (.m3u) are not covered.
+- The "Database" entry in the main menu and the settings menu is called
+  "Music" (displayed and spoken). Only the `dest` and `voice` text of
+  `LANG_TAGCACHE` in `apps/lang/english.lang` changed, so other languages
+  still say "Database". Other messages that mention the database (e.g.
+  "Database is not ready") are unchanged.
 - Removed: holding Menu no longer opens the quick screen, and the "hold
   left/right to scroll lists" setting has no effect on iPods.
 - Holding Menu while already on the main menu goes back to the previous
