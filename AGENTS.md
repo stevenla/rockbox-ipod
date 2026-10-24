@@ -32,6 +32,8 @@ Use the Docker setup rather than installing a toolchain on the host (macOS):
     docker compose run --rm rockbox rbbuild ipod6g b       # bootloader
     docker compose run --rm rockbox rbbuild ipodvideo s all  # simulator
 
+- Default target: build `ipod4g` (iPod 4th gen, monochrome) unless told
+  otherwise: `docker compose run --rm rockbox rbbuild ipod4g`.
 - `rbbuild <target> [type] [make goals...]` is `docker/rbbuild.sh`. Types:
   `n` normal, `b` bootloader, `s` simulator.
 - The build directories `build-*/` are git-ignored.
