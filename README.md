@@ -27,6 +27,10 @@ Builds run in Docker, so the only thing needed on the host is Docker.
 3. Install the build by unzipping `rockbox.zip` to the root of the iPod
    (this creates `.rockbox/`).
 
+4. Optional: the fork is used with the
+   [FlatCover](https://themes.rockbox.org/index.php?themeid=3463&target=ipod4g)
+   theme (iPod 4G). Install it into `.rockbox/` on the iPod.
+
 For a shell inside the build environment (to run `tools/configure` and `make`
 yourself), run `docker compose run --rm rockbox`. To add the toolchains for
 non-ARM players, change `TOOLCHAINS` in `docker-compose.yml`. See
