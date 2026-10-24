@@ -74,6 +74,17 @@ iPod firmware:
   Playing from the file browser and other lists. Implemented with a separate
   `button_context_mainmenu` keymap that returns `ACTION_WPS_PLAY`, handled in
   `wps_handle_playback_action()` via `wps_do_action(WPS_PLAYPAUSE)`.
+- Selecting the track that is already playing (or paused) opens Now Playing
+  instead of restarting it, but only when it is selected from the same list
+  it was started from: the same folder in the file browser, or the same
+  album/artist/etc. listing in the database. A different list starts the track
+  over as usual. The list is remembered as a key set with
+  `playlist_set_source()` after `playlist_start()` in `ft_enter()`
+  (`filetree.c`) and `tagtree_play_folder()` (`tagtree.c`), and cleared
+  whenever the current playlist is replaced. `playlist_source_is_playing()`
+  does the check. Limitations: the key for database listings is built from the
+  menu entry and the selections leading to it, so it is lost if the database
+  is reloaded; playlist files (.m3u) are not covered.
 - Removed: holding Menu no longer opens the quick screen, and the "hold
   left/right to scroll lists" setting has no effect on iPods.
 - Holding Menu while already on the main menu goes back to the previous

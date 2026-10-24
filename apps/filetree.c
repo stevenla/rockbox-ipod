@@ -43,6 +43,7 @@
 #include "filetree.h"
 #include "misc.h"
 #include "strnatcmp.h"
+#include "crc32.h"
 #include "keyboard.h"
 
 #ifdef HAVE_MULTIVOLUME
@@ -593,6 +594,7 @@ int ft_enter(struct tree_context* c)
     else {
         bool play = false;
         int start_index=0;
+        uint32_t source_key;
 
         switch ( file_attr & FILE_ATTR_MASK ) {
             case FILE_ATTR_M3U:
@@ -607,6 +609,16 @@ int ft_enter(struct tree_context* c)
 
             case FILE_ATTR_AUDIO:
             {
+                /* like the original iPod firmware: selecting the track that
+                   is already playing from the list it was started from just
+                   opens Now Playing */
+                source_key = crc_32(c->currdir, strlen(c->currdir), 1) | 1;
+                if (playlist_source_is_playing(source_key, buf))
+                {
+                    rc = GO_TO_WPS;
+                    break;
+                }
+
                 int res = bookmark_autoload(c->currdir);
                 if (res == BOOKMARK_CANCEL || res == BOOKMARK_DO_RESUME)
                     break;
@@ -643,6 +655,7 @@ int ft_enter(struct tree_context* c)
                                 start_index = 0;
                         }
                         playlist_start(start_index, 0, 0);
+                        playlist_set_source(source_key);
                         play = true;
                     }
                 }

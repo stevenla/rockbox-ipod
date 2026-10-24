@@ -54,6 +54,7 @@
 #include "dir.h"
 #include "playback.h"
 #include "strnatcmp.h"
+#include "crc32.h"
 #include "panic.h"
 #include "onplay.h"
 #include "plugin.h"
@@ -66,6 +67,7 @@
 #define TAGNAVI_USER_CONFIG     ROCKBOX_DIR "/tagnavi_user.config"
 
 static int tagtree_play_folder(struct tree_context* c);
+static uint32_t tagtree_source_key(struct tree_context* c);
 
 /* reuse of tagtree data after tagtree_play_folder() */
 static uint32_t loaded_entries_crc = 0;
@@ -2292,6 +2294,16 @@ int tagtree_enter(struct tree_context* c, bool is_visible)
                     break;
                 }
                 c->dirlevel--;
+                /* like the original iPod firmware: selecting the track that
+                   is already playing from the listing it was started from
+                   just opens Now Playing */
+                char path[MAX_PATH];
+                if (tagtree_get_filename(c, path, sizeof(path)) == 0
+                    && playlist_source_is_playing(tagtree_source_key(c), path))
+                {
+                    rc = GO_TO_WPS;
+                    break;
+                }
                 /* about to create a new current playlist...
                  allow user to cancel the operation */
                 if (!warn_on_pl_erase())
@@ -2740,6 +2752,22 @@ int tagtree_add_to_playlist(const char* playlist, bool new_playlist)
     return tagtree_insert_selection(0, false, playlist, new_playlist) ? 0 : -1;
 }
 
+/* Identifies the track listing in c by the menu entry and the selections
+ * made on the way to it, so the same album/artist/etc. gives the same key. */
+static uint32_t tagtree_source_key(struct tree_context* c)
+{
+    uintptr_t id[3 + MAX_TAGS];
+    int n = 0;
+
+    id[n++] = (uintptr_t)csi;
+    id[n++] = c->currtable;
+    id[n++] = c->currextra;
+    for (int i = 0; i < c->currextra && i < MAX_TAGS; i++)
+        id[n++] = csi->result_seek[i];
+
+    return crc_32(id, n * sizeof(id[0]), 1) | 1;
+}
+
 static int tagtree_play_folder(struct tree_context* c)
 {
     logf( "%s", __func__);
@@ -2773,6 +2801,7 @@ static int tagtree_play_folder(struct tree_context* c)
     }
 
     playlist_start(start_index, 0, 0);
+    playlist_set_source(tagtree_source_key(c));
     loaded_entries_crc = tagtree_data_crc(c); /* save crc in case we return */
     return 0;
 }

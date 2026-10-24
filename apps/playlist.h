@@ -136,6 +136,8 @@ int playlist_get_display_index(void);
 int playlist_amount(void);
 void playlist_set_last_shuffled_start(void);
 struct playlist_info *playlist_get_current(void);
+void playlist_set_source(uint32_t key);
+bool playlist_source_is_playing(uint32_t key, const char *path);
 bool playlist_dynamic_only(void);
 
 /* Exported functions for all playlists.  Pass NULL for playlist_info

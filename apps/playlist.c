@@ -176,6 +176,10 @@
 #define PLAYLIST_SKIPPED                0x10000000
 
 static struct playlist_info current_playlist;
+
+/* Identifies the browser listing the current playlist was built from, or 0
+ * if unknown. Cleared whenever the current playlist is replaced. */
+static uint32_t playlist_source;
 static struct playlist_info on_disk_playlist;
 
 /* playlist elapsed percent function from skin_tokens.c */
@@ -609,6 +613,7 @@ static void new_playlist_unlocked(struct playlist_info* playlist,
                                   const char *dir, const char *file)
 {
     empty_playlist_unlocked(playlist, false);
+    playlist_source = 0;
 
     /* enable dirplay for the current playlist if there's a DIR but no FILE */
     if (!file && dir && playlist == &current_playlist)
@@ -2019,6 +2024,23 @@ void playlist_shutdown(void)
     playlist_write_unlock(playlist);
 }
 
+/* Record which browser listing the current playlist was just built from. */
+void playlist_set_source(uint32_t key)
+{
+    playlist_source = key;
+}
+
+/* True if the current playlist was built from the listing identified by key
+ * and path is the track that is playing (or paused) right now. */
+bool playlist_source_is_playing(uint32_t key, const char *path)
+{
+    struct mp3entry *id3 = audio_current_track();
+
+    return key != 0 && key == playlist_source
+           && (audio_status() & AUDIO_STATUS_PLAY)
+           && id3 && !strcmp(id3->path, path);
+}
+
 /* returns number of tracks in playlist (includes queued/inserted tracks) */
 int playlist_amount_ex(const struct playlist_info* playlist)
 {
@@ -3190,6 +3212,7 @@ int playlist_resume(void)
 
     struct playlist_info* playlist = &current_playlist;
     dc_thread_stop(playlist);
+    playlist_source = 0;
 
     if (core_allocatable() < (1 << 10))
         talk_buffer_set_policy(TALK_BUFFER_LOOSE); /* back off voice buffer */
@@ -3620,6 +3643,7 @@ int playlist_set_current(struct playlist_info* playlist)
     playlist_write_lock(&current_playlist);
 
     empty_playlist_unlocked(&current_playlist, false);
+    playlist_source = 0;
 
     strmemccpy(current_playlist.filename, playlist->filename,
         sizeof(current_playlist.filename));
