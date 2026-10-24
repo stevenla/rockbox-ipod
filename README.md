@@ -127,6 +127,12 @@ other keymap returns these actions outside the WPS.
   in the group and applies to every entry, so all variants need the prefix.
   Users with their own `tagnavi_user.config` keep their old formats.
 
+- Artist and album lists in the database browser no longer show the
+  "[All tracks]" and "[By album]" entries (the latter was the album
+  list's, and also appeared inside each artist). The `<Random>` entry stays.
+  Removed in `retrieve_entries()` (`apps/tagtree.c`). The tables behind them
+  are unused but kept to keep the diff small.
+
 ### Build environment
 
 - **Docker build setup** (`Dockerfile`, `docker-compose.yml`, `.dockerignore`,
