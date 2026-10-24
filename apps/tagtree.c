@@ -1721,8 +1721,20 @@ static int retrieve_entries(struct tree_context *c, int offset, bool init)
 
     if (tag != tag_title && tag != tag_filename)
     {
-        /* "[All tracks]" and "[By album]" entries are not shown */
-        if (offset <= 0)
+        /* "[All tracks]" is only shown in an album list inside another
+         * selection (e.g. an artist), and "[By album]" is never shown */
+        bool show_all_tracks = (tag == tag_album && level > 0);
+        if (show_all_tracks && offset <= 0)
+        {
+            dptr->newtable = TABLE_ALLSUBENTRIES;
+            dptr->name = ID2P(LANG_TAGNAVI_ALL_TRACKS);
+            dptr->extraseek = 0;
+            dptr->customaction = ONPLAY_NO_CUSTOMACTION;
+            dptr++;
+            current_entry_count++;
+            c->special_entry_count++;
+        }
+        if (offset <= (show_all_tracks ? 1 : 0))
         {
             dptr->newtable = TABLE_NAVIBROWSE;
             dptr->name = ID2P(LANG_TAGNAVI_RANDOM);
@@ -1733,7 +1745,7 @@ static int retrieve_entries(struct tree_context *c, int offset, bool init)
             c->special_entry_count++;
         }
 
-        total_count++;
+        total_count += show_all_tracks ? 2 : 1;
     }
 
     while (tagcache_get_next(&tcs, tcs_buf, tcs_bufsz))

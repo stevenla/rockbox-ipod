@@ -127,11 +127,11 @@ other keymap returns these actions outside the WPS.
   in the group and applies to every entry, so all variants need the prefix.
   Users with their own `tagnavi_user.config` keep their old formats.
 
-- Artist and album lists in the database browser no longer show the
-  "[All tracks]" and "[By album]" entries (the latter was the album
-  list's, and also appeared inside each artist). The `<Random>` entry stays.
-  Removed in `retrieve_entries()` (`apps/tagtree.c`). The tables behind them
-  are unused but kept to keep the diff small.
+- The database browser no longer shows "[All tracks]" in artist and album
+  lists, or "[By album]" anywhere. "[All tracks]" is still shown in the album
+  list inside an artist (or any other selection). The `<Random>` entry stays.
+  Changed in `retrieve_entries()` (`apps/tagtree.c`); the tables behind
+  "[By album]" are unused but kept to keep the diff small.
 
 ### Build environment
 
