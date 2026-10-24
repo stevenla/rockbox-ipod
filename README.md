@@ -74,6 +74,11 @@ iPod firmware:
   used for `CONTEXT_MAINMENU` and `CONTEXT_TREE`, that returns
   `ACTION_WPS_PLAY`, handled in `wps_handle_playback_action()` via
   `wps_do_action(WPS_PLAYPAUSE)`.
+- In Now Playing, Select opens the context menu (it used to go back to the
+  file or database browser) and holding Select triggers the hotkey action
+  (the "Hotkey" setting for the WPS; nothing happens if it is off). The
+  Select+Play hotkey chord was removed from Now Playing. Changed in
+  `button_context_wps` in `apps/keymaps/keymap-ipod.c`. Menu still goes back.
 - Selecting the track that is already playing (or paused) opens Now Playing
   instead of restarting it, but only when it is selected from the same list
   it was started from: the same folder in the file browser, or the same
