@@ -122,7 +122,9 @@ other keymap returns these actions outside the WPS.
 - Track lists in the database browser show only the title (no disc number,
   track number or length). They are still sorted by disc and track number.
   In `apps/tagnavi.config`, `fmt_title` now starts with a hidden sort prefix
-  (`%02d%03d` disc and track number) that `%strip = "5"` removes before display.
+  (`%02d%03d` disc and track number, `00000` when untagged) that the `%strip = "5"`
+  on the last variant removes before display. Strip comes from the last format
+  in the group and applies to every entry, so all variants need the prefix.
   Users with their own `tagnavi_user.config` keep their old formats.
 
 ### Build environment
